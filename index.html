@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brian Rea · Ingeniería en Telecomunicaciones</title>
+<meta name="description" content="Portafolio de Brian Rea — redes, seguridad DNS y sistemas. Trabajo de titulación sobre DNSSEC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E1A;
+    --surface:#111827;
+    --surface-2:#0F1524;
+    --line:#1F2A3D;
+    --text:#E7ECF5;
+    --muted:#8A93A6;
+    --signal:#F2A93B;   /* ámbar: señal / enlace activo */
+    --secure:#48C9B0;   /* teal: dato autenticado (DNSSEC) */
+    --display:'Sora',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--body);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(242,169,59,.07), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(72,201,176,.06), transparent 35%);
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  a{color:inherit}
+  ::selection{background:var(--signal);color:#0A0E1A}
+
+  /* eyebrow / labels en mono */
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);
+  }
+
+  /* ---------- NAV ---------- */
+  header{position:sticky;top:0;z-index:20;
+    background:rgba(10,14,26,.82);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line)}
+  nav{display:flex;justify-content:space-between;align-items:center;
+    height:64px}
+  .brand{font-family:var(--mono);font-weight:700;font-size:.95rem}
+  .brand span{color:var(--signal)}
+  .navlinks{display:flex;gap:28px}
+  .navlinks a{font-size:.9rem;color:var(--muted);text-decoration:none;
+    transition:color .2s}
+  .navlinks a:hover{color:var(--text)}
+  @media(max-width:620px){.navlinks{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:88px 0 72px}
+  .hero h1{font-family:var(--display);font-weight:700;
+    font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.05;
+    letter-spacing:-.02em;margin:20px 0 14px}
+  .hero .lead{color:var(--muted);font-size:1.1rem;max-width:52ch}
+
+  /* signature: traza dig */
+  .trace{
+    font-family:var(--mono);font-size:.86rem;line-height:1.9;
+    background:var(--surface-2);border:1px solid var(--line);
+    border-radius:12px;padding:22px 24px;margin-top:38px;
+    overflow-x:auto;box-shadow:0 20px 50px -30px rgba(0,0,0,.9)}
+  .trace .line{white-space:pre;opacity:0;transform:translateY(4px);
+    animation:reveal .5s forwards}
+  .trace .prompt{color:var(--signal)}
+  .trace .comment{color:var(--muted)}
+  .trace .key{color:var(--text)}
+  .trace .val{color:var(--secure)}
+  .trace .flag{color:var(--secure);font-weight:700}
+  .trace .flag::before{content:"● "}
+  @keyframes reveal{to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){
+    .trace .line{animation:none;opacity:1;transform:none}
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:36px}
+  .sec-head h2{font-family:var(--display);font-weight:600;
+    font-size:1.6rem;letter-spacing:-.01em}
+
+  .prose{color:var(--muted);max-width:60ch;font-size:1.02rem}
+  .prose strong{color:var(--text);font-weight:600}
+
+  /* proyectos */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:24px;transition:border-color .2s,transform .2s;
+    display:flex;flex-direction:column;gap:12px}
+  .card:hover{border-color:var(--signal);transform:translateY(-3px)}
+  .card .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--signal)}
+  .card h3{font-family:var(--display);font-weight:600;font-size:1.15rem}
+  .card p{color:var(--muted);font-size:.95rem}
+  .card .stack{font-family:var(--mono);font-size:.75rem;color:var(--muted);
+    margin-top:auto;padding-top:6px}
+  .card a.link{font-family:var(--mono);font-size:.8rem;color:var(--secure);
+    text-decoration:none}
+  .card a.link:hover{text-decoration:underline}
+
+  /* skills */
+  .skillcols{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+  @media(max-width:640px){.skillcols{grid-template-columns:1fr}}
+  .skillcols h4{font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--signal);margin-bottom:12px}
+  .skillcols ul{list-style:none}
+  .skillcols li{padding:6px 0;color:var(--muted);font-size:.95rem;
+    border-bottom:1px solid var(--line)}
+  .skillcols li:last-child{border-bottom:none}
+
+  /* formación */
+  .timeline{display:flex;flex-direction:column;gap:2px}
+  .titem{display:grid;grid-template-columns:120px 1fr;gap:20px;
+    padding:16px 0;border-bottom:1px solid var(--line)}
+  @media(max-width:560px){.titem{grid-template-columns:1fr;gap:4px}}
+  .titem .when{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+  .titem .what strong{display:block;color:var(--text);font-weight:600}
+  .titem .what span{color:var(--muted);font-size:.92rem}
+
+  /* contacto */
+  .contact-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px}
+  .contact-links a{font-family:var(--mono);font-size:.9rem;
+    text-decoration:none;color:var(--text);
+    border:1px solid var(--line);border-radius:8px;padding:12px 18px;
+    transition:border-color .2s,color .2s}
+  .contact-links a:hover{border-color:var(--secure);color:var(--secure)}
+
+  footer{padding:40px 0;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:.78rem;color:var(--muted);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  :focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="brand">brian<span>.rea</span></div>
+    <div class="navlinks">
+      <a href="#proyectos">Proyectos</a>
+      <a href="#skills">Stack</a>
+      <a href="#formacion">Formación</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" style="border-top:none">
+    <p class="eyebrow">Ingeniería en Telecomunicaciones · Ecuador</p>
+    <h1>Redes que resuelven,<br>y que además confían.</h1>
+    <p class="lead">Diseño, simulo y aseguro infraestructura de red. Mi trabajo de titulación mide, con evidencia reproducible, cuánta protección real aporta DNSSEC frente al envenenamiento de caché.</p>
+
+    <div class="trace" aria-label="Traza de resolución DNS del perfil">
+<span class="line prompt" style="animation-delay:.05s">$ dig +dnssec brian.rea</span>
+<span class="line comment" style="animation-delay:.35s">;; consultando servidor autoritativo…</span>
+<span class="line" style="animation-delay:.7s"><span class="comment">;; SECTION ANSWER</span></span>
+<span class="line" style="animation-delay:.95s"><span class="key">rol      </span> IN  <span class="val">Ingeniero de Redes / Seguridad</span></span>
+<span class="line" style="animation-delay:1.15s"><span class="key">base     </span> IN  <span class="val">Otavalo, Imbabura — Ecuador</span></span>
+<span class="line" style="animation-delay:1.35s"><span class="key">enfoque  </span> IN  <span class="val">DNS · DNSSEC · virtualización · ethical hacking</span></span>
+<span class="line" style="animation-delay:1.6s"><span class="flag" style="margin-top:.4em;display:inline-block">flags: ad (perfil autenticado)</span></span>
+    </div>
+  </section>
+
+  <!-- SOBRE MI -->
+  <section id="sobre">
+    <div class="sec-head"><p class="eyebrow">01</p><h2>Sobre mí</h2></div>
+    <p class="prose">Soy estudiante de <strong>Ingeniería en Telecomunicaciones</strong> en la Universidad Técnica del Norte, en la etapa final de mi tesis. Trabajo sobre Linux (entornos Arch), levanto laboratorios completos en <strong>GNS3 y Docker</strong>, y me muevo con soltura entre el enrutamiento (Cisco, MPLS/OSPF/BGP) y la seguridad de red. Me interesa lo que se puede <strong>medir y reproducir</strong>: prefiero un testbed con datos a una afirmación sin evidencia.</p>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section id="proyectos">
+    <div class="sec-head"><p class="eyebrow">02</p><h2>Proyectos</h2></div>
+    <div class="grid">
+
+      <article class="card">
+        <span class="tag">Tesis · DNS Security</span>
+        <h3>Testbed DNSSEC vs DNS tradicional</h3>
+        <p>Entorno de simulación que recrea una red empresarial de tres zonas y ejecuta cinco escenarios de envenenamiento de caché, midiendo tasa de éxito del ataque, latencia y CPU.</p>
+        <span class="stack">GNS3 · Docker · BIND 9 · tshark · Scapy</span>
+        <a class="link" href="https://github.com/elektro614/dnssec-cache-poisoning-testbed" target="_blank" rel="noopener">Ver repositorio →</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Laboratorio · Ataque</span>
+        <h3>ARP + DNS Spoofing y ataque Kaminsky</h3>
+        <p>Implementación y verificación de ataques de envenenamiento en un resolver sin validación, contrastados contra uno con DNSSEC. Documentación paso a paso de cada procedimiento.</p>
+        <span class="stack">Python · Scapy · BIND · Linux</span>
+        <!-- TODO: enlaza si publicas repo/PDF; si no, borra esta línea -->
+      </article>
+
+      <article class="card">
+        <span class="tag">Laboratorio · Enrutamiento</span>
+        <h3>Enrutamiento avanzado MPLS / OSPF / BGP</h3>
+        <p>Laboratorio de enrutamiento multiprotocolo con documentación de límites de rendimiento del router intermedio como hallazgo técnico.</p>
+        <span class="stack">Cisco · GNS3 · Dynamips</span>
+      </article>
+
+      <article class="card">
+        <span class="tag">Experimentación · RF</span>
+        <h3>Modulación de señales con SDR</h3>
+        <p>Exploración de modulación y captura de espectro con radio definida por software.</p>
+        <span class="stack">RTL-SDR · ADALM-PLUTO · GNU Radio</span>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="sec-head"><p class="eyebrow">03</p><h2>Stack técnico</h2></div>
+    <div class="skillcols">
+      <div>
+        <h4>Redes</h4>
+        <ul>
+          <li>Cisco (CCNA) · routing &amp; switching</li>
+          <li>MPLS · OSPF · BGP</li>
+          <li>GNS3 · Dynamips</li>
+          <li>DNS · DNSSEC · BIND 9</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Seguridad</h4>
+        <ul>
+          <li>Ethical Hacking</li>
+          <li>ARP / DNS spoofing · cache poisoning</li>
+          <li>Análisis de tráfico (tshark / Wireshark)</li>
+          <li>Scapy</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Sistemas &amp; virtualización</h4>
+        <ul>
+          <li>Linux (Arch, EndeavourOS)</li>
+          <li>Docker · Docker Compose</li>
+          <li>VirtualBox · VMware · KVM/QEMU</li>
+          <li>Bash · Python</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Radiofrecuencia</h4>
+        <ul>
+          <li>RTL-SDR · ADALM-PLUTO</li>
+          <li>Modulación de señales</li>
+          <li>Análisis de espectro</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMACION -->
+  <section id="formacion">
+    <div class="sec-head"><p class="eyebrow">04</p><h2>Formación &amp; certificaciones</h2></div>
+    <div class="timeline">
+      <div class="titem">
+        <span class="when">En curso</span>
+        <div class="what"><strong>Ing. en Telecomunicaciones — UTN</strong>
+        <span>Trabajo de titulación sobre robustez de DNSSEC. Ibarra, Ecuador.</span></div>
+      </div>
+      <div class="titem">
+        <span class="when">2025</span>
+        <div class="what"><strong>WALC 2025 — Redes comunitarias</strong>
+        <span>Taller técnico.</span></div>
+      </div>
+      <div class="titem">
+        <span class="when">Cert.</span>
+        <div class="what"><strong>Cisco CCNA · ISC2 · Ethical Hacker (70 h)</strong>
+        <span>Redes, fundamentos de ciberseguridad y hacking ético.</span></div>
+      </div>
+      <!-- TODO: agrega fechas exactas y cualquier otra certificación que quieras destacar -->
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="sec-head"><p class="eyebrow">05</p><h2>Contacto</h2></div>
+    <p class="prose">¿Un proyecto de redes, una vacante o una duda sobre el testbed? Escríbeme.</p>
+    <div class="contact-links">
+      <!-- TODO: reemplaza con tus datos reales -->
+      <a href="mailto:TU-CORREO@ejemplo.com">correo →</a>
+      <a href="https://github.com/elektro614" target="_blank" rel="noopener">github →</a>
+      <a href="#" target="_blank" rel="noopener">linkedin →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <span>© <span id="y"></span> Brian Rea</span>
+  <span>hecho en Linux · servido con DNSSEC</span>
+</footer>
+
+<script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>
